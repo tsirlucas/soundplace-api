@@ -1,0 +1,29 @@
+{
+  "name": "soundplace-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": ".src/index.js",
+  "scripts": {
+    "start": "npm run build:live",
+    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -r tsconfig-paths/register ./src/server.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "query-string": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.4",
+    "@types/express": "^4.16.0",
+    "@types/node": "^10.5.2",
+    "@types/query-string": "^6.1.0",
+    "dotenv": "^6.0.0",
+    "nodemon": "^1.18.2",
+    "ts-node": "^7.0.0",
+    "tsconfig-paths": "^3.4.2",
+    "typescript": "^2.9.2"
+  }
+}
