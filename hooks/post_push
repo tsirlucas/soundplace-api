@@ -1,3 +1,5 @@
+#!/bin/bash
+echo "------------ Running post push hook ------------"
 mkdir .gcloud-secrets
 echo "$GCLOUD_AUTH" >> .gcloud-secrets/gcloud_auth.json
 export GOOGLE_APPLICATION_CREDENTIALS=.gcloud-secrets/gcloud_auth.json
