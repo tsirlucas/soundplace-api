@@ -1,6 +1,6 @@
 import cors from 'cors';
 import express from 'express';
-import {authRouter, dataRouter} from 'routes';
+import {dataRouter} from 'routes';
 
 const app = express();
 
@@ -11,8 +11,6 @@ app.options('*', cors());
 app.get('/', (_req, res) => res.send('Working ;)'));
 
 // Routes
-
-app.use('/auth', authRouter);
 
 app.use('/api', dataRouter);
 

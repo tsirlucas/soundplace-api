@@ -19,7 +19,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Build docker image
-          command: docker build . -t soundplace-api --build-arg SPOTIFY_ID=$SPOTIFY_ID --build-arg SPOTIFY_SECRET=$SPOTIFY_SECRET
+          command: docker build . -t soundplace-api
       - run:
           name: Publish docker image
           command: |
