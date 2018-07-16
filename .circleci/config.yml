@@ -55,18 +55,16 @@ workflows:
   deploy:
     jobs:
       - deploy_image:
-          branches:
-            ignore:
-              - /.*/
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /.*/
       - deploy_service:
           requires:
             - deploy_image
-          branches:
-            ignore:
-              - /.*/
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /.*/
