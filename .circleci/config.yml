@@ -55,10 +55,10 @@ workflows:
   deploy:
     jobs:
       - deploy_image
-        filters:
+          filters:
             tags:
               only: /.*/
       - deploy_service
-        filters:
+          filters:
             tags:
               only: /.*/
