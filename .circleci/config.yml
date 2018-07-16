@@ -54,11 +54,13 @@ workflows:
       - release
   deploy:
     jobs:
-      - deploy_image
+      - deploy_image:
           filters:
             tags:
               only: /.*/
-      - deploy_service
+      - deploy_service:
+          requires:
+            - deploy_image
           filters:
             tags:
               only: /.*/
