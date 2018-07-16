@@ -16,6 +16,10 @@
     "query-string": "^5.0.0"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^2.1.1",
+    "@semantic-release/exec": "^2.2.4",
+    "@semantic-release/git": "^6.0.1",
+    "@semantic-release/github": "^4.4.1",
     "@types/cors": "^2.8.4",
     "@types/express": "^4.16.0",
     "@types/node": "^10.5.2",
@@ -25,5 +29,25 @@
     "ts-node": "^7.0.0",
     "tsconfig-paths": "^3.4.2",
     "typescript": "^2.9.2"
+  },
+  "release": {
+    "prepare": [
+      "@semantic-release/changelog",
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "bash ./scripts/setVersion.sh ${nextRelease.version}"
+      },
+      {
+        "path": "@semantic-release/git",
+        "assets": [
+          "package.json",
+          "CHANGELOG.md"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    "publish": [
+      "@semantic-release/github"
+    ]
   }
 }
