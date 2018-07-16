@@ -2,7 +2,7 @@ version: 2
 jobs:
   release:
     docker:
-      - image: node:alpine
+      - image: fusioncomau/alpine-node-git
     steps:
       - checkout
       - run:
