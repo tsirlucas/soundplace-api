@@ -1,0 +1,46 @@
+version: 2
+jobs:
+  deploy_image:
+    docker:
+      - image: tsirlucas/soundplace-deployer
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build docker image
+          command: docker build . -t soundplace-api --build-arg SPOTIFY_ID=$SPOTIFY_ID --build-arg SPOTIFY_SECRET=$SPOTIFY_SECRET
+      - run:
+          name: Publish docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+              docker tag soundplace-api "tsirlucas/soundplace-api:${CIRCLE_SHA1}"
+              docker push "tsirlucas/soundplace-api:${CIRCLE_SHA1}"
+              docker tag soundplace-api "tsirlucas/soundplace-api:latest"
+              docker push "tsirlucas/soundplace-api:latest"
+            fi
+  deploy_service:
+    docker:
+      - image: tsirlucas/soundplace-deployer
+    steps:
+      - run:
+          name: Set gcloud credentials
+          command: mkdir .gcloud-secrets && echo "$GCLOUD_AUTH" >> .gcloud-secrets/gcloud_auth.json
+      - run:
+          name: cat
+          command: cat .gcloud-secrets/gcloud_auth.json
+      - run:
+          name: Gcloud login
+          command: gcloud auth activate-service-account --key-file .gcloud-secrets/gcloud_auth.json
+      - run:
+          name: Get cluster credentials
+          command: gcloud container clusters get-credentials soundplace --zone us-central1-b --project soundplace-infra
+      - run:
+          name: Rolling update pods
+          command: kubectl rolling-update data-api-pod --image=tsirlucas/soundplace-api:latest --image-pull-policy=Always
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - deploy_image
+      - deploy_service

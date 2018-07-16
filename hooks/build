@@ -1,3 +1,0 @@
-#!/bin/bash
-echo "------------ Running custom build ------------"
-docker build . -t $IMAGE_NAME --build-arg SPOTIFY_ID=$SPOTIFY_ID --build-arg SPOTIFY_SECRET=$SPOTIFY_SECRET
