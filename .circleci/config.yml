@@ -51,10 +51,7 @@ workflows:
   version: 2
   release:
     jobs:
-      - release:
-          filters:
-            tags:
-              ignore: /.*/
+      - release
   deploy:
     jobs:
       - deploy_image:
