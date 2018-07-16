@@ -6,11 +6,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install semantic release
-          command: npm i semantic-release -g
+          name: Run npm install
+          command: npm install
       - run:
           name: Run semantic release
-          command: semantic-release
+          command: npm run release
   deploy_image:
     docker:
       - image: tsirlucas/soundplace-deployer
@@ -24,8 +24,8 @@ jobs:
           name: Publish docker image
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-            docker tag soundplace-api "tsirlucas/soundplace-api:${CIRCLE_SHA1}"
-            docker push "tsirlucas/soundplace-api:${CIRCLE_SHA1}"
+            docker tag soundplace-api "tsirlucas/soundplace-api:${CIRCLE_TAG}"
+            docker push "tsirlucas/soundplace-api:${CIRCLE_TAG}"
             docker tag soundplace-api "tsirlucas/soundplace-api:latest"
             docker push "tsirlucas/soundplace-api:latest"
   deploy_service:
@@ -46,21 +46,30 @@ jobs:
           command: gcloud container clusters get-credentials soundplace --zone us-central1-b --project soundplace-infra
       - run:
           name: Rolling update pods
-          command: kubectl rolling-update data-api-pod --image=tsirlucas/soundplace-api:latest --image-pull-policy=Always
+          command: kubectl rolling-update data-api-pod --image=tsirlucas/soundplace-api:${CIRCLE_TAG} --image-pull-policy=Always
 workflows:
   version: 2
   release:
     jobs:
-      - release
+      - release:
+          filters:
+            tags:
+              ignore: /.*/
   deploy:
     jobs:
       - deploy_image:
+          branches:
+            ignore:
+              - /.*/
           filters:
             tags:
               only: /.*/
       - deploy_service:
           requires:
             - deploy_image
+          branches:
+            ignore:
+              - /.*/
           filters:
             tags:
               only: /.*/

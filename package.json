@@ -5,7 +5,8 @@
   "main": ".src/index.js",
   "scripts": {
     "start": "npm run build:live",
-    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -r tsconfig-paths/register ./src/server.ts"
+    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -r tsconfig-paths/register ./src/server.ts",
+    "release": "semantic-release"
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +27,7 @@
     "@types/query-string": "^6.1.0",
     "dotenv": "^6.0.0",
     "nodemon": "^1.18.2",
+    "semantic-release": "^15.7.1",
     "ts-node": "^7.0.0",
     "tsconfig-paths": "^3.4.2",
     "typescript": "^2.9.2"
