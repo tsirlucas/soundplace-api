@@ -39,12 +39,15 @@ export class SpotifyDataService {
 
   public async getUserPlaylists(req: Request) {
     try {
-      const {data} = await this.axiosInstance.get('/me/playlists', {
-        headers: {
-          Authorization: req.headers.authorization,
-          Accept: 'application/json',
+      const {data} = await this.axiosInstance.get(
+        '/me/playlists?fields=items(id,name,images(url))',
+        {
+          headers: {
+            Authorization: req.headers.authorization,
+            Accept: 'application/json',
+          },
         },
-      });
+      );
       return normalizePlaylists(data);
     } catch (e) {
       throw e;
@@ -55,12 +58,15 @@ export class SpotifyDataService {
     try {
       const {playlist} = req.params;
 
-      const {data} = await this.axiosInstance.get(`/users/${userId}/playlists/${playlist}`, {
-        headers: {
-          Authorization: req.headers.authorization,
-          Accept: 'application/json',
+      const {data} = await this.axiosInstance.get(
+        `/users/${userId}/playlists/${playlist}?fields=id,name,images(url)`,
+        {
+          headers: {
+            Authorization: req.headers.authorization,
+            Accept: 'application/json',
+          },
         },
-      });
+      );
       return normalizePlaylist(data);
     } catch (e) {
       throw e;
@@ -70,12 +76,15 @@ export class SpotifyDataService {
   public async getPlaylistTracks(req: Request, userId: string) {
     try {
       const {playlist} = req.params;
-      const {data} = await this.axiosInstance.get(`/users/${userId}/playlists/${playlist}/tracks`, {
-        headers: {
-          Authorization: req.headers.authorization,
-          Accept: 'application/json',
+      const {data} = await this.axiosInstance.get(
+        `/users/${userId}/playlists/${playlist}/tracks?fields=items(track(id,name,album(id,name,images(url)),artists(id,name),duration_ms))`,
+        {
+          headers: {
+            Authorization: req.headers.authorization,
+            Accept: 'application/json',
+          },
         },
-      });
+      );
       return normalizeTracks(data);
     } catch (e) {
       throw e;
