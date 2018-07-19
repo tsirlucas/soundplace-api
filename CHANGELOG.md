@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/tsirlucas/soundplace-api/compare/v1.0.0...v1.0.1) (2018-07-16)
+
+
+### Bug Fixes
+
+* **deploy:** use replication controller name ([d246be2](https://github.com/tsirlucas/soundplace-api/commit/d246be2))
+
 # 1.0.0 (2018-07-16)
 
 
