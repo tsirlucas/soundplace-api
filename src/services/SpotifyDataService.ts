@@ -1,5 +1,4 @@
 import axios, {AxiosInstance} from 'axios';
-import {Request} from 'express';
 import {normalizePlaylist, normalizePlaylists, normalizeTracks, normalizeUser} from 'schemas';
 
 export class SpotifyDataService {
@@ -23,11 +22,11 @@ export class SpotifyDataService {
     return this.instance;
   }
 
-  public async getUserData(req: Request) {
+  public async getUserData(authorization: string | undefined) {
     try {
       const {data} = await this.axiosInstance.get('/me', {
         headers: {
-          Authorization: req.headers.authorization,
+          Authorization: authorization,
           Accept: 'application/json',
         },
       });
@@ -37,13 +36,13 @@ export class SpotifyDataService {
     }
   }
 
-  public async getUserPlaylists(req: Request) {
+  public async getUserPlaylists(authorization: string | undefined) {
     try {
       const {data} = await this.axiosInstance.get(
         '/me/playlists?fields=items(id,name,images(url))',
         {
           headers: {
-            Authorization: req.headers.authorization,
+            Authorization: authorization,
             Accept: 'application/json',
           },
         },
@@ -54,15 +53,13 @@ export class SpotifyDataService {
     }
   }
 
-  public async getPlaylist(req: Request, userId: string) {
+  public async getPlaylist(userId: string, playlistId: string, authorization: string | undefined) {
     try {
-      const {playlist} = req.params;
-
       const {data} = await this.axiosInstance.get(
-        `/users/${userId}/playlists/${playlist}?fields=id,name,images(url)`,
+        `/users/${userId}/playlists/${playlistId}?fields=id,name,images(url)`,
         {
           headers: {
-            Authorization: req.headers.authorization,
+            Authorization: authorization,
             Accept: 'application/json',
           },
         },
@@ -73,14 +70,17 @@ export class SpotifyDataService {
     }
   }
 
-  public async getPlaylistTracks(req: Request, userId: string) {
+  public async getPlaylistTracks(
+    userId: string,
+    playlistId: string,
+    authorization: string | undefined,
+  ) {
     try {
-      const {playlist} = req.params;
       const {data} = await this.axiosInstance.get(
-        `/users/${userId}/playlists/${playlist}/tracks?fields=items(track(id,name,album(id,name,images(url)),artists(id,name),duration_ms))`,
+        `/users/${userId}/playlists/${playlistId}/tracks?fields=items(track(id,name,album(id,name,images(url)),artists(id,name),duration_ms))`,
         {
           headers: {
-            Authorization: req.headers.authorization,
+            Authorization: authorization,
             Accept: 'application/json',
           },
         },

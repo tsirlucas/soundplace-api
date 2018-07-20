@@ -1,24 +1,18 @@
+import {SpotifyAlbum} from './SpotifyAlbum';
+import {SpotifyArtist} from './SpotifyArtist';
+
+export type SpotifyTrack = {
+  album: SpotifyAlbum;
+  artists: SpotifyArtist[];
+  id: string;
+  name: string;
+  duration_ms: number;
+};
+
 export type SpotifyTracks = {
   href: string;
   items: {
-    track: {
-      album: {
-        id: string;
-        images: {
-          height: number;
-          url: string;
-          width: number;
-        }[];
-        name: string;
-      };
-      artists: {
-        id: string;
-        name: string;
-      }[];
-      id: string;
-      name: string;
-      duration_ms: number;
-    };
+    track: SpotifyTrack;
   }[];
   limit: number;
   next: string;

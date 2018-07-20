@@ -5,6 +5,7 @@ export const normalizeTracks = (tracks: SpotifyTracks): Track[] => {
     id: track.id,
     name: track.name,
     album: {
+      id: track.album.id,
       name: track.album.name,
       cover: track.album.images[0].url,
     },

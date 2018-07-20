@@ -1,6 +1,6 @@
 import cors from 'cors';
 import express from 'express';
-import {dataRouter} from 'routes';
+import {dataRouter, subscriptionRouter} from 'routes';
 
 const app = express();
 
@@ -13,5 +13,6 @@ app.get('/', (_req, res) => res.send('Working ;)'));
 // Routes
 
 app.use('/api', dataRouter);
+app.use('/subscription', subscriptionRouter);
 
 export default app;

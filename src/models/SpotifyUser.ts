@@ -1,3 +1,5 @@
+import {SpotifyImage} from './SpotifyImage';
+
 export type SpotifyUser = {
   birthdate: string;
   country: string;
@@ -12,11 +14,7 @@ export type SpotifyUser = {
   };
   href: string;
   id: string;
-  images: {
-    height: number;
-    url: string;
-    width: number;
-  }[];
+  images: SpotifyImage[];
   product: string;
   type: string;
   uri: string;

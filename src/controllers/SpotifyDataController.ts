@@ -15,22 +15,35 @@ export class SpotifyDataController {
   }
 
   public async getUserData(req: Request, res: Response) {
-    const user = await SpotifyDataService.getInstance().getUserData(req);
+    const {authorization} = req.headers;
+    const user = await SpotifyDataService.getInstance().getUserData(authorization);
     res.send({data: user});
   }
 
   public async getUserPlaylists(req: Request, res: Response) {
-    const playlists = await SpotifyDataService.getInstance().getUserPlaylists(req);
+    const {authorization} = req.headers;
+
+    const playlists = await SpotifyDataService.getInstance().getUserPlaylists(authorization);
     res.send({data: playlists});
   }
 
   public async getPlaylistTracks(req: Request, res: Response) {
     try {
-      const {id} = await SpotifyDataService.getInstance().getUserData(req);
-      const playlist = await SpotifyDataService.getInstance().getPlaylist(req, id);
-      const tracks = await SpotifyDataService.getInstance().getPlaylistTracks(req, id);
+      const {playlist} = req.params;
+      const {authorization} = req.headers;
+      const {id} = await SpotifyDataService.getInstance().getUserData(authorization);
+      const playlistObj = await SpotifyDataService.getInstance().getPlaylist(
+        id,
+        playlist,
+        authorization,
+      );
+      const tracks = await SpotifyDataService.getInstance().getPlaylistTracks(
+        id,
+        playlist,
+        authorization,
+      );
 
-      const result = normalizePlaylistTracks(playlist, tracks);
+      const result = normalizePlaylistTracks(playlistObj, tracks);
 
       res.send({data: result});
     } catch (e) {
