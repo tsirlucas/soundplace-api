@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/tsirlucas/soundplace-api/compare/v1.0.1...v1.0.2) (2018-07-19)
+
+
+### Performance Improvements
+
+* **service:** use fields query for faster requests ([ee4bcef](https://github.com/tsirlucas/soundplace-api/commit/ee4bcef))
+
 ## [1.0.1](https://github.com/tsirlucas/soundplace-api/compare/v1.0.0...v1.0.1) (2018-07-16)
 
 
