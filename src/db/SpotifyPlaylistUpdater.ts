@@ -26,7 +26,7 @@ export class SpotifyPlaylistUpdater {
     try {
       const {rows} = await client.query('SELECT * FROM playlist_data WHERE id=$1', [playlist.id]);
 
-      if (!rows[0] || this.playlistComparison(rows[0], playlist))
+      if (!rows[0] || this.playlistComparison(rows[0], playlist)) {
         await client.query(
           'INSERT INTO playlist_data (id, name, cover, user_id)\
           VALUES ($1, $2, $3, $4)\
@@ -36,6 +36,7 @@ export class SpotifyPlaylistUpdater {
           user_id = excluded.user_id;',
           [playlist.id, playlist.name, playlist.cover, userId],
         );
+      }
     } catch (e) {
       throw e;
     }

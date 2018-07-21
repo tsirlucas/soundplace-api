@@ -3,6 +3,8 @@ import {Router} from 'express';
 
 export const subscriptionRouter = Router();
 
+subscriptionRouter.get('/user', SubscriptionController.getInstance().subscribeToUser);
+
 subscriptionRouter.get('/playlists', SubscriptionController.getInstance().subscribeToPlaylists);
 
 subscriptionRouter.get(

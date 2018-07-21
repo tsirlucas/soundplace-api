@@ -26,7 +26,7 @@ export class SpotifyTrackUpdater {
     try {
       const {rows} = await client.query('SELECT * FROM album_data WHERE id=$1', [album.id]);
 
-      if (!rows[0] || this.albumComparison(rows[0], album))
+      if (!rows[0] || this.albumComparison(rows[0], album)) {
         await client.query(
           'INSERT INTO album_data (id, name, cover)\
           VALUES ($1, $2, $3)\
@@ -35,6 +35,7 @@ export class SpotifyTrackUpdater {
           cover = excluded.cover;',
           [album.id, album.name, album.cover],
         );
+      }
     } catch (e) {
       throw e;
     }
@@ -44,7 +45,7 @@ export class SpotifyTrackUpdater {
     try {
       const {rows} = await client.query('SELECT * FROM artist_data WHERE id=$1', [artist.id]);
 
-      if (!rows[0] || rows[0].name !== artist.name)
+      if (!rows[0] || rows[0].name !== artist.name) {
         await client.query(
           'INSERT INTO artist_data (id, name)\
           VALUES ($1, $2)\
@@ -52,6 +53,7 @@ export class SpotifyTrackUpdater {
           SET name = excluded.name;',
           [artist.id, artist.name],
         );
+      }
     } catch (e) {
       throw e;
     }
@@ -69,7 +71,7 @@ export class SpotifyTrackUpdater {
     try {
       const {rows} = await client.query('SELECT * FROM track_data WHERE id=$1', [track.id]);
 
-      if (!rows[0] || this.trackComparison(rows[0], track))
+      if (!rows[0] || this.trackComparison(rows[0], track)) {
         await client.query(
           'INSERT INTO track_data (id, name, duration, artist_id, album_id)\
           VALUES ($1, $2, $3, $4)\
@@ -80,6 +82,7 @@ export class SpotifyTrackUpdater {
           album_id = excluded.album_id;',
           [track.id, track.name, track.duration, track.artist.id, track.album.id],
         );
+      }
     } catch (e) {
       throw e;
     }

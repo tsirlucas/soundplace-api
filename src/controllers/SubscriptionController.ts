@@ -1,4 +1,4 @@
-import {SpotifyPlaylistUpdater, SpotifyTrackUpdater} from 'db';
+import {SpotifyPlaylistUpdater, SpotifyTrackUpdater, SpotifyUserUpdater} from 'db';
 import {Request, Response} from 'express';
 
 import {SpotifyDataService, SubscriptionDaemonService} from 'services';
@@ -12,6 +12,16 @@ export class SubscriptionController {
     }
 
     return this.instance;
+  }
+
+  public subscribeToUser(req: Request, res: Response) {
+    const {authorization} = req.headers;
+
+    const poolId = SubscriptionDaemonService.getInstance().run(async () => {
+      const user = await SpotifyDataService.getInstance().getUserData(authorization);
+      await SpotifyUserUpdater.getInstance().setUser(user);
+    });
+    res.send({poolId: poolId});
   }
 
   public async subscribeToPlaylists(req: Request, res: Response) {
