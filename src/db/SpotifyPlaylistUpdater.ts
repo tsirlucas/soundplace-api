@@ -27,7 +27,7 @@ export class SpotifyPlaylistUpdater {
       const {rows} = await client.query('SELECT * FROM playlist_data WHERE id=$1', [playlist.id]);
 
       if (!rows[0] || this.playlistComparison(rows[0], playlist))
-        client.query(
+        await client.query(
           'INSERT INTO playlist_data (id, name, cover, user_id)\
           VALUES ($1, $2, $3, $4)\
           ON CONFLICT (id) DO UPDATE\
@@ -41,18 +41,37 @@ export class SpotifyPlaylistUpdater {
     }
   }
 
+  private async clearRemovedPlaylists(client: PoolClient, playlists: Playlist[], userId: string) {
+    try {
+      const {rows} = await client.query('SELECT * FROM playlist_data WHERE user_id=$1);', [userId]);
+      const newPlaylistsIds = playlists.map((playlist) => playlist.id);
+
+      const deletedPlaylists = rows.filter(
+        (dbPlaylist: DBPlaylist) => newPlaylistsIds.indexOf(dbPlaylist.id) < 0,
+      );
+
+      await Promise.all(
+        deletedPlaylists.map((dbPlaylist: DBPlaylist) => {
+          return client.query('DELETE FROM playlist_data WHERE id=$1;', [dbPlaylist.id]);
+        }),
+      );
+    } catch (e) {
+      throw e;
+    }
+  }
+
   public async setPlaylists(playlists: Playlist[], userId: string) {
     return new Promise((res, reject) => {
-      DBConnection.getInstance().getClient(async (err, client) => {
-        if (!err) {
-          res(
-            Promise.all(
-              playlists.map((playlist) => this.setPlaylist(client, playlist, userId)),
-            ).catch((e) => reject(e)),
+      DBConnection.getInstance().getClient(async (client) => {
+        try {
+          await this.clearRemovedPlaylists(client, playlists, userId);
+          await Promise.all(
+            playlists.map((playlist) => this.setPlaylist(client, playlist, userId)),
           );
+          res();
+        } catch (e) {
+          reject(e);
         }
-
-        reject(err);
       });
     });
   }

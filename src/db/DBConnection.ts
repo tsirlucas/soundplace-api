@@ -25,10 +25,13 @@ export class DBConnection {
     });
   }
 
-  public getClient(callback: (err: Error, client: PoolClient) => Promise<void>) {
+  public getClient(callback: (client: PoolClient) => Promise<any>) {
     this.pool.connect(async (err, client, done) => {
       try {
-        await callback(err, client);
+        if (err) throw err;
+        await callback(client);
+      } catch (e) {
+        throw e;
       } finally {
         done();
       }

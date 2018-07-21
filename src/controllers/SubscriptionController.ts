@@ -44,7 +44,7 @@ export class SubscriptionController {
       );
 
       await SpotifyPlaylistUpdater.getInstance().setPlaylists([playlist], userId);
-      await SpotifyTrackUpdater.getInstance().setTracks(tracks);
+      await SpotifyTrackUpdater.getInstance().setTracks(tracks, playlist.id);
     });
     res.send({poolId: poolId});
   }
