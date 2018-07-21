@@ -16,7 +16,6 @@ export class SubscriptionController {
 
   public subscribeToUser(req: Request, res: Response) {
     const {authorization} = req.headers;
-
     const poolId = SubscriptionDaemonService.getInstance().run(async () => {
       const user = await SpotifyDataService.getInstance().getUserData(authorization);
       await SpotifyUserUpdater.getInstance().setUser(user);
@@ -26,7 +25,7 @@ export class SubscriptionController {
 
   public async subscribeToPlaylists(req: Request, res: Response) {
     const {authorization} = req.headers;
-    const {userId} = req.params;
+    const {userId} = req.query;
 
     const poolId = SubscriptionDaemonService.getInstance().run(async () => {
       const playlists = await SpotifyDataService.getInstance().getUserPlaylists(authorization);
@@ -36,12 +35,13 @@ export class SubscriptionController {
   }
 
   public async subscribeToPlaylistTracks(req: Request, res: Response) {
-    const {userId, playlistId} = req.params;
+    const {userId, playlistId} = req.query;
     const {authorization} = req.headers;
 
     const poolId = `${userId}${playlistId}`;
 
     SubscriptionDaemonService.getInstance().runWithoutRepetition(poolId, async () => {
+      console.log('init');
       const playlist = await SpotifyDataService.getInstance().getPlaylist(
         userId,
         playlistId,
@@ -55,12 +55,13 @@ export class SubscriptionController {
 
       await SpotifyPlaylistUpdater.getInstance().setPlaylists([playlist], userId);
       await SpotifyTrackUpdater.getInstance().setTracks(tracks, playlist.id);
+      console.log('finish');
     });
     res.send({poolId: poolId});
   }
 
   public async stopSubscription(req: Request, res: Response) {
-    const {poolId} = req.params;
+    const {poolId} = req.query;
     SubscriptionDaemonService.getInstance().stop(poolId);
     res.send({poolId: poolId});
   }

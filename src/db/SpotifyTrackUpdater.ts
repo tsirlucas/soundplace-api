@@ -74,7 +74,7 @@ export class SpotifyTrackUpdater {
       if (!rows[0] || this.trackComparison(rows[0], track)) {
         await client.query(
           'INSERT INTO track_data (id, name, duration, artist_id, album_id)\
-          VALUES ($1, $2, $3, $4)\
+          VALUES ($1, $2, $3, $4, $5)\
           ON CONFLICT (id) DO UPDATE\
           SET name = excluded.name,\
           duration = excluded.duration,\
@@ -93,7 +93,7 @@ export class SpotifyTrackUpdater {
       await client.query(
         'INSERT INTO playlist_track (track_id, playlist_id)\
           VALUES ($1, $2)\
-          ON CONFLICT (playlist_track_pkey) DO NOTHING;',
+          ON CONFLICT (track_id, playlist_id) DO NOTHING;',
         [trackId, playlistId],
       );
     } catch (e) {
@@ -114,7 +114,7 @@ export class SpotifyTrackUpdater {
 
   private async clearRemovedTracks(client: PoolClient, tracks: Track[], playlistId: string) {
     try {
-      const {rows} = await client.query('SELECT * FROM playlist_track WHERE playlist_id=$1);', [
+      const {rows} = await client.query('SELECT * FROM playlist_track WHERE playlist_id=$1;', [
         playlistId,
       ]);
       const newTracksIds = tracks.map((track) => track.id);

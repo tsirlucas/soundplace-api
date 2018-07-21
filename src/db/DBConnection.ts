@@ -1,3 +1,4 @@
+import {environment} from 'config';
 import {Pool, PoolClient} from 'pg';
 
 export class DBConnection {
@@ -5,7 +6,13 @@ export class DBConnection {
   private pool: Pool;
 
   private constructor() {
-    this.pool = new Pool();
+    this.pool = new Pool({
+      host: environment.settings.dbEndpoint,
+      database: environment.settings.dbName,
+      user: environment.secrets.dbUser,
+      password: environment.secrets.dbPassword,
+      ssl: true,
+    });
   }
 
   static getInstance() {

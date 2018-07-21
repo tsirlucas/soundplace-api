@@ -2,7 +2,7 @@ import uuid from 'uuid/v4';
 
 export class SubscriptionDaemonService {
   private static instance: SubscriptionDaemonService;
-  private minute = 60000;
+  private minute = 40000;
   private pools: {[index: string]: {timer: NodeJS.Timer; count: number}} = {};
 
   static getInstance() {
@@ -45,13 +45,13 @@ export class SubscriptionDaemonService {
 
   private async repeater(id: string, cb: () => Promise<void>) {
     try {
-      await this.requester(cb);
-
       if (!this.pools[id]) {
         this.pools[id] = {
-          timer: setTimeout(() => this.repeater(id, cb), this.minute),
+          timer: setTimeout(() => this.requester(id, cb), this.minute),
           count: 1,
         };
+
+        await this.requester(id, cb);
       } else {
         this.pools[id].count = this.pools[id].count + 1;
       }
@@ -60,7 +60,14 @@ export class SubscriptionDaemonService {
     }
   }
 
-  private async requester(cb: () => Promise<void>) {
-    return cb().catch((err) => console.log(err));
+  private async requester(poolId: string, cb: () => Promise<void>) {
+    const pool = this.pools[poolId] || {};
+    clearTimeout(pool.timer);
+
+    await cb().catch((err) => console.log(err));
+
+    if (this.pools[poolId]) {
+      this.pools[poolId].timer = setTimeout(() => this.requester(poolId, cb), this.minute);
+    }
   }
 }

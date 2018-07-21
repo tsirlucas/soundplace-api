@@ -23,7 +23,8 @@
       "schemas": ["src/schemas/index.ts"],
       "schemas/*": ["src/schemas/*"],
       "db": ["src/db/index.ts"],
-      "db/*": ["src/db/*"]
+      "db/*": ["src/db/*"],
+      "config": ["src/environment"]
     },
     "typeRoots": [
       "node_modules/@types"

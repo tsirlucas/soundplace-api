@@ -44,7 +44,7 @@ export class SpotifyPlaylistUpdater {
 
   private async clearRemovedPlaylists(client: PoolClient, playlists: Playlist[], userId: string) {
     try {
-      const {rows} = await client.query('SELECT * FROM playlist_data WHERE user_id=$1);', [userId]);
+      const {rows} = await client.query('SELECT * FROM playlist_data WHERE user_id=$1;', [userId]);
       const newPlaylistsIds = playlists.map((playlist) => playlist.id);
 
       const deletedPlaylists = rows.filter(
