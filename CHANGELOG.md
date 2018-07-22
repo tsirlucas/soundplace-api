@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/tsirlucas/soundplace-api/compare/v1.1.1...v1.1.2) (2018-07-22)
+
+
+### Bug Fixes
+
+* **dbPem:** fix file name ([cfcdb0b](https://github.com/tsirlucas/soundplace-api/commit/cfcdb0b))
+
 ## [1.1.1](https://github.com/tsirlucas/soundplace-api/compare/v1.1.0...v1.1.1) (2018-07-22)
 
 
