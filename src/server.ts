@@ -10,7 +10,7 @@ interface AddressInfoWithPort {
   port: number;
 }
 
-fs_writeFile('postgres.pem', environment.secrets.dbPem)
+fs_writeFile('postgresql.pem', environment.secrets.dbPem)
   .then(() => {
     const httpServer = app.listen(process.env.PORT || 3000, (error: Error) => {
       if (error) {
