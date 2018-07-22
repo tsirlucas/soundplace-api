@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/tsirlucas/soundplace-api/compare/v1.1.4...v1.1.5) (2018-07-22)
+
+
+### Bug Fixes
+
+* **auth:** better error handling on verify token ([3305f20](https://github.com/tsirlucas/soundplace-api/commit/3305f20))
+
 ## [1.1.4](https://github.com/tsirlucas/soundplace-api/compare/v1.1.3...v1.1.4) (2018-07-22)
 
 
