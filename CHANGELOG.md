@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/tsirlucas/soundplace-api/compare/v1.1.0...v1.1.1) (2018-07-22)
+
+
+### Bug Fixes
+
+* **dbPem:** add dbPem before start server ([#3](https://github.com/tsirlucas/soundplace-api/issues/3)) ([b331ae5](https://github.com/tsirlucas/soundplace-api/commit/b331ae5))
+
 # [1.1.0](https://github.com/tsirlucas/soundplace-api/compare/v1.0.3...v1.1.0) (2018-07-22)
 
 
