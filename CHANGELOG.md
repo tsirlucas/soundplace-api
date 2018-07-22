@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/tsirlucas/soundplace-api/compare/v1.1.2...v1.1.3) (2018-07-22)
+
+
+### Bug Fixes
+
+* **authEndpoint:** add http prefix ([f18fae1](https://github.com/tsirlucas/soundplace-api/commit/f18fae1))
+
 ## [1.1.2](https://github.com/tsirlucas/soundplace-api/compare/v1.1.1...v1.1.2) (2018-07-22)
 
 
