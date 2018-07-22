@@ -1,3 +1,14 @@
+# [1.1.0](https://github.com/tsirlucas/soundplace-api/compare/v1.0.3...v1.1.0) (2018-07-22)
+
+
+### Features
+
+* **auth:** adapt to new jwt auth method ([bc843e3](https://github.com/tsirlucas/soundplace-api/commit/bc843e3))
+* **subscription:** Add subscription feature ([313da58](https://github.com/tsirlucas/soundplace-api/commit/313da58))
+* **subscription:** add user subscription logics ([2f6f363](https://github.com/tsirlucas/soundplace-api/commit/2f6f363))
+* **subscription:** delete removed playlists and tracks ([cf1186b](https://github.com/tsirlucas/soundplace-api/commit/cf1186b))
+* **subscription:** final fixes on subscriptions and db auth ([646bb8e](https://github.com/tsirlucas/soundplace-api/commit/646bb8e))
+
 ## [1.0.3](https://github.com/tsirlucas/soundplace-api/compare/v1.0.2...v1.0.3) (2018-07-20)
 
 
