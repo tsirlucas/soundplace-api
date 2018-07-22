@@ -1,9 +1,11 @@
+import {SpotifyImage} from './SpotifyImage';
+
 export type SpotifyPlaylists = {
   href: string;
   items: {
     id: string;
     images: {
-      url: string;
+      url: SpotifyImage['url'];
     }[];
     name: string;
   }[];

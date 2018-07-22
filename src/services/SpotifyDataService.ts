@@ -1,5 +1,6 @@
-import axios, {AxiosInstance} from 'axios';
-import {Request} from 'express';
+import axios, {AxiosInstance, AxiosResponse} from 'axios';
+import {environment} from 'config';
+import {SpotifyAuth} from 'db';
 import {normalizePlaylist, normalizePlaylists, normalizeTracks, normalizeUser} from 'schemas';
 
 export class SpotifyDataService {
@@ -23,49 +24,51 @@ export class SpotifyDataService {
     return this.instance;
   }
 
-  public async getUserData(req: Request) {
+  private async get(path: string, userId: string): Promise<AxiosResponse<any>> {
+    const token = await SpotifyAuth.getInstance().getToken(userId);
     try {
-      const {data} = await this.axiosInstance.get('/me', {
+      const result = await this.axiosInstance.get(path, {
         headers: {
-          Authorization: req.headers.authorization,
+          Authorization: 'Bearer ' + token,
           Accept: 'application/json',
         },
       });
+      return result;
+    } catch (e) {
+      if (e.response.data.error.message === 'Only valid bearer authentication supported') {
+        await axios.get(
+          `${environment.settings.authEndpoint}/spotify/refreshToken?userId=${userId}`,
+        );
+        return this.get(path, userId);
+      }
+
+      throw e;
+    }
+  }
+
+  public async getUserData(userId: string) {
+    try {
+      const {data} = await this.get('/me', userId);
       return normalizeUser(data);
     } catch (e) {
       throw e;
     }
   }
 
-  public async getUserPlaylists(req: Request) {
+  public async getUserPlaylists(userId: string) {
     try {
-      const {data} = await this.axiosInstance.get(
-        '/me/playlists?fields=items(id,name,images(url))',
-        {
-          headers: {
-            Authorization: req.headers.authorization,
-            Accept: 'application/json',
-          },
-        },
-      );
+      const {data} = await this.get('/me/playlists?fields=items(id,name,images(url))', userId);
       return normalizePlaylists(data);
     } catch (e) {
       throw e;
     }
   }
 
-  public async getPlaylist(req: Request, userId: string) {
+  public async getPlaylist(userId: string, playlistId: string) {
     try {
-      const {playlist} = req.params;
-
-      const {data} = await this.axiosInstance.get(
-        `/users/${userId}/playlists/${playlist}?fields=id,name,images(url)`,
-        {
-          headers: {
-            Authorization: req.headers.authorization,
-            Accept: 'application/json',
-          },
-        },
+      const {data} = await this.get(
+        `/users/${userId}/playlists/${playlistId}?fields=id,name,images(url)`,
+        userId,
       );
       return normalizePlaylist(data);
     } catch (e) {
@@ -73,17 +76,11 @@ export class SpotifyDataService {
     }
   }
 
-  public async getPlaylistTracks(req: Request, userId: string) {
+  public async getPlaylistTracks(userId: string, playlistId: string) {
     try {
-      const {playlist} = req.params;
-      const {data} = await this.axiosInstance.get(
-        `/users/${userId}/playlists/${playlist}/tracks?fields=items(track(id,name,album(id,name,images(url)),artists(id,name),duration_ms))`,
-        {
-          headers: {
-            Authorization: req.headers.authorization,
-            Accept: 'application/json',
-          },
-        },
+      const {data} = await this.get(
+        `/users/${userId}/playlists/${playlistId}/tracks?fields=items(track(id,name,album(id,name,images(url)),artists(id,name),duration_ms))`,
+        userId,
       );
       return normalizeTracks(data);
     } catch (e) {

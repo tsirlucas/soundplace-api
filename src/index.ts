@@ -1,17 +1,35 @@
+import axios from 'axios';
+import {environment} from 'config';
 import cors from 'cors';
 import express from 'express';
-import {dataRouter} from 'routes';
+import {dataRouter, subscriptionRouter} from 'routes';
 
 const app = express();
 
-app.use(cors());
+app
+  .use(cors())
+  .options('*', cors())
+  .use(async (req, res, next) => {
+    try {
+      const {authorization} = req.headers;
+      const {status, data} = await axios.get(`${environment.settings.authEndpoint}/jwt/verify`, {
+        headers: {
+          Authorization: authorization,
+        },
+      });
 
-app.options('*', cors());
-
-app.get('/', (_req, res) => res.send('Working ;)'));
-
-// Routes
-
-app.use('/api', dataRouter);
+      if (status === 200) {
+        res.locals.userId = data.userId;
+        next();
+      } else {
+        res.sendStatus(status);
+      }
+    } catch (e) {
+      throw e;
+    }
+  })
+  .get('/', (_req, res) => res.send('Working ;)'))
+  .use('/api', dataRouter)
+  .use('/subscription', subscriptionRouter);
 
 export default app;
