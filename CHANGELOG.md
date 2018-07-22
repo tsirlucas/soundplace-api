@@ -1,3 +1,10 @@
+## [1.1.6](https://github.com/tsirlucas/soundplace-api/compare/v1.1.5...v1.1.6) (2018-07-22)
+
+
+### Bug Fixes
+
+* **auth:** make / route public ([219132b](https://github.com/tsirlucas/soundplace-api/commit/219132b))
+
 ## [1.1.5](https://github.com/tsirlucas/soundplace-api/compare/v1.1.4...v1.1.5) (2018-07-22)
 
 
