@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/tsirlucas/soundplace-api/compare/v1.1.3...v1.1.4) (2018-07-22)
+
+
+### Bug Fixes
+
+* **env:** some env fixes ([9d225aa](https://github.com/tsirlucas/soundplace-api/commit/9d225aa))
+
 ## [1.1.3](https://github.com/tsirlucas/soundplace-api/compare/v1.1.2...v1.1.3) (2018-07-22)
 
 
