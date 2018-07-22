@@ -14,34 +14,27 @@ export class SpotifyDataController {
     return this.instance;
   }
 
-  public async getUserData(req: Request, res: Response) {
-    const {authorization} = req.headers;
-    const user = await SpotifyDataService.getInstance().getUserData(authorization);
+  public async getUserData(_req: Request, res: Response) {
+    const {userId} = res.locals;
+
+    const user = await SpotifyDataService.getInstance().getUserData(userId);
     res.send({data: user});
   }
 
-  public async getUserPlaylists(req: Request, res: Response) {
-    const {authorization} = req.headers;
+  public async getUserPlaylists(_req: Request, res: Response) {
+    const {userId} = res.locals;
 
-    const playlists = await SpotifyDataService.getInstance().getUserPlaylists(authorization);
+    const playlists = await SpotifyDataService.getInstance().getUserPlaylists(userId);
     res.send({data: playlists});
   }
 
   public async getPlaylistTracks(req: Request, res: Response) {
     try {
       const {playlist} = req.params;
-      const {authorization} = req.headers;
-      const {id} = await SpotifyDataService.getInstance().getUserData(authorization);
-      const playlistObj = await SpotifyDataService.getInstance().getPlaylist(
-        id,
-        playlist,
-        authorization,
-      );
-      const tracks = await SpotifyDataService.getInstance().getPlaylistTracks(
-        id,
-        playlist,
-        authorization,
-      );
+      const {userId} = res.locals;
+
+      const playlistObj = await SpotifyDataService.getInstance().getPlaylist(userId, playlist);
+      const tracks = await SpotifyDataService.getInstance().getPlaylistTracks(userId, playlist);
 
       const result = normalizePlaylistTracks(playlistObj, tracks);
 

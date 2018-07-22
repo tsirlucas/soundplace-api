@@ -14,44 +14,34 @@ export class SubscriptionController {
     return this.instance;
   }
 
-  public subscribeToUser(req: Request, res: Response) {
-    const {authorization} = req.headers;
+  public subscribeToUser(_req: Request, res: Response) {
     const poolId = SubscriptionDaemonService.getInstance().run(async () => {
-      const user = await SpotifyDataService.getInstance().getUserData(authorization);
+      const user = await SpotifyDataService.getInstance().getUserData(res.locals.userId);
       await SpotifyUserUpdater.getInstance().setUser(user);
     });
     res.send({poolId: poolId});
   }
 
-  public async subscribeToPlaylists(req: Request, res: Response) {
-    const {authorization} = req.headers;
-    const {userId} = req.query;
+  public async subscribeToPlaylists(_req: Request, res: Response) {
+    const {userId} = res.locals;
 
     const poolId = SubscriptionDaemonService.getInstance().run(async () => {
-      const playlists = await SpotifyDataService.getInstance().getUserPlaylists(authorization);
+      const playlists = await SpotifyDataService.getInstance().getUserPlaylists(userId);
       await SpotifyPlaylistUpdater.getInstance().setPlaylists(playlists, userId);
     });
     res.send({poolId: poolId});
   }
 
   public async subscribeToPlaylistTracks(req: Request, res: Response) {
-    const {userId, playlistId} = req.query;
-    const {authorization} = req.headers;
+    const {playlistId} = req.query;
+    const {userId} = res.locals;
 
     const poolId = `${userId}${playlistId}`;
 
     SubscriptionDaemonService.getInstance().runWithoutRepetition(poolId, async () => {
       console.log('init');
-      const playlist = await SpotifyDataService.getInstance().getPlaylist(
-        userId,
-        playlistId,
-        authorization,
-      );
-      const tracks = await SpotifyDataService.getInstance().getPlaylistTracks(
-        userId,
-        playlistId,
-        authorization,
-      );
+      const playlist = await SpotifyDataService.getInstance().getPlaylist(userId, playlistId);
+      const tracks = await SpotifyDataService.getInstance().getPlaylistTracks(userId, playlistId);
 
       await SpotifyPlaylistUpdater.getInstance().setPlaylists([playlist], userId);
       await SpotifyTrackUpdater.getInstance().setTracks(tracks, playlist.id);

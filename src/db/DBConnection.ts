@@ -1,5 +1,5 @@
 import {environment} from 'config';
-import {Pool, PoolClient} from 'pg';
+import {Pool, PoolClient, QueryResult} from 'pg';
 
 export class DBConnection {
   private static instance: DBConnection;
@@ -23,12 +23,15 @@ export class DBConnection {
     return this.instance;
   }
 
-  public query(text: string, params: any[], callback: Function) {
-    const start = Date.now();
-    return this.pool.query(text, params, (err, res) => {
-      const duration = Date.now() - start;
-      console.log('executed query', {text, duration, rows: res.rowCount});
-      callback(err, res);
+  public query(text: string, params: any[]): Promise<QueryResult> {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+      this.pool.query(text, params, (err, res) => {
+        const duration = Date.now() - start;
+        console.log('executed query', {text, duration, rows: res.rowCount});
+        if (err) reject(err);
+        resolve(res);
+      });
     });
   }
 
