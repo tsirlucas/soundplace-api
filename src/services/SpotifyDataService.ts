@@ -33,15 +33,19 @@ export class SpotifyDataService {
           Accept: 'application/json',
         },
       });
+
       return result;
     } catch (e) {
-      if (e.response.data.error.message === 'Only valid bearer authentication supported') {
+      if (
+        e.response.data.error.message === 'Only valid bearer authentication supported' ||
+        e.response.data.error.message === 'The access token expired'
+      ) {
         await axios.get(
           `${environment.settings.authEndpoint}/spotify/refreshToken?userId=${userId}`,
         );
         return this.get(path, userId);
       }
-
+      console.log(e);
       throw e;
     }
   }

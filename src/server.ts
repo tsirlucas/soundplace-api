@@ -10,7 +10,9 @@ interface AddressInfoWithPort {
   port: number;
 }
 
-fs_writeFile('postgresql.pem', environment.secrets.dbPem)
+const parsedPem = (environment.secrets.dbPem as string).replace(/"/g, '').replace(/\\n/g, '\n');
+
+fs_writeFile('postgresql.pem', parsedPem, {encoding: 'utf8'})
   .then(() => {
     const httpServer = app.listen(process.env.PORT || 3000, (error: Error) => {
       if (error) {

@@ -6,7 +6,7 @@ export class DBConnection {
   private pool: Pool;
 
   private constructor() {
-    this.pool = new Pool({
+    const config = {
       host: environment.settings.dbEndpoint,
       database: environment.settings.dbName,
       user: environment.secrets.dbUser,
@@ -14,7 +14,9 @@ export class DBConnection {
       ssl: {
         ca: 'postgresql.pem',
       },
-    });
+    };
+
+    this.pool = new Pool(config);
   }
 
   static getInstance() {
@@ -30,7 +32,7 @@ export class DBConnection {
       const start = Date.now();
       this.pool.query(text, params, (err, res) => {
         const duration = Date.now() - start;
-        console.log('executed query', {text, duration, rows: res.rowCount});
+        console.log('executed query', {text, duration});
         if (err) reject(err);
         resolve(res);
       });
