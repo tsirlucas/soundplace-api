@@ -11,7 +11,9 @@ export class DBConnection {
       database: environment.settings.dbName,
       user: environment.secrets.dbUser,
       password: environment.secrets.dbPassword,
-      ssl: true,
+      ssl: {
+        ca: 'postgresql.pem',
+      },
     });
   }
 
