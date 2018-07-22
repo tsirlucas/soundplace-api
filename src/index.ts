@@ -12,20 +12,16 @@ app
   .use(async (req, res, next) => {
     try {
       const {authorization} = req.headers;
-      const {status, data} = await axios.get(`${environment.settings.authEndpoint}/jwt/verify`, {
+      const {data} = await axios.get(`${environment.settings.authEndpoint}/jwt/verify`, {
         headers: {
-          Authorization: authorization,
+          Authorization: authorization || null,
         },
       });
 
-      if (status === 200) {
-        res.locals.userId = data.userId;
-        next();
-      } else {
-        res.sendStatus(status);
-      }
+      res.locals.userId = data.userId;
+      next();
     } catch (e) {
-      throw e;
+      res.status(e.response.status).send(e.response.data);
     }
   })
   .get('/', (_req, res) => res.send('Working ;)'))
