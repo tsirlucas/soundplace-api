@@ -9,6 +9,7 @@ const app = express();
 app
   .use(cors())
   .options('*', cors())
+  .get('/', (_req, res) => res.send('Working ;)'))
   .use(async (req, res, next) => {
     try {
       const {authorization} = req.headers;
@@ -24,7 +25,6 @@ app
       res.status(e.response.status).send(e.response.data);
     }
   })
-  .get('/', (_req, res) => res.send('Working ;)'))
   .use('/api', dataRouter)
   .use('/subscription', subscriptionRouter);
 
