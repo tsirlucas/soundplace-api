@@ -1,3 +1,10 @@
+## [1.1.7](https://github.com/tsirlucas/soundplace-api/compare/v1.1.6...v1.1.7) (2018-07-23)
+
+
+### Bug Fixes
+
+* **subscription:** fix on sql error playlistTracks subscription ([4ee3675](https://github.com/tsirlucas/soundplace-api/commit/4ee3675))
+
 ## [1.1.6](https://github.com/tsirlucas/soundplace-api/compare/v1.1.5...v1.1.6) (2018-07-22)
 
 
