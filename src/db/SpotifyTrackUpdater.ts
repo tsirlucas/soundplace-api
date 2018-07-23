@@ -2,8 +2,6 @@ import {PoolClient} from 'pg';
 
 import {Album, Artist, DBAlbum, DBTrack, Track} from 'models';
 
-import {DBConnection} from './DBConnection';
-
 export class SpotifyTrackUpdater {
   private static instance: SpotifyTrackUpdater;
 
@@ -134,20 +132,16 @@ export class SpotifyTrackUpdater {
     }
   }
 
-  public async setTracks(tracks: Track[], playlistId: string) {
-    return new Promise((res, reject) => {
-      DBConnection.getInstance().getClient(async (client) => {
-        try {
-          await this.clearRemovedTracks(client, tracks, playlistId);
-          await Promise.all(
-            tracks.map((track) => this.splitAndSetTrack(client, track, playlistId)),
-          );
+  public async setTracks(client: PoolClient, tracks: Track[], playlistId: string) {
+    return new Promise(async (res, reject) => {
+      try {
+        await this.clearRemovedTracks(client, tracks, playlistId);
+        await Promise.all(tracks.map((track) => this.splitAndSetTrack(client, track, playlistId)));
 
-          res();
-        } catch (e) {
-          reject(e);
-        }
-      });
+        res();
+      } catch (e) {
+        reject(e);
+      }
     });
   }
 }

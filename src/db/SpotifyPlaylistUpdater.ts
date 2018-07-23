@@ -1,8 +1,9 @@
 import {PoolClient} from 'pg';
 
-import {DBPlaylist, Playlist} from 'models';
+import {DBPlaylist, Playlist, Track} from 'models';
 
 import {DBConnection} from './DBConnection';
+import {SpotifyTrackUpdater} from './SpotifyTrackUpdater';
 
 export class SpotifyPlaylistUpdater {
   private static instance: SpotifyPlaylistUpdater;
@@ -69,6 +70,20 @@ export class SpotifyPlaylistUpdater {
           await Promise.all(
             playlists.map((playlist) => this.setPlaylist(client, playlist, userId)),
           );
+          res();
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+  }
+
+  public async setPlaylistTracks(playlist: Playlist, tracks: Track[], userId: string) {
+    return new Promise((res, reject) => {
+      DBConnection.getInstance().getClient(async (client) => {
+        try {
+          await this.setPlaylist(client, playlist, userId);
+          await SpotifyTrackUpdater.getInstance().setTracks(client, tracks, playlist.id);
           res();
         } catch (e) {
           reject(e);

@@ -1,4 +1,4 @@
-import {SpotifyPlaylistUpdater, SpotifyTrackUpdater, SpotifyUserUpdater} from 'db';
+import {SpotifyPlaylistUpdater, SpotifyUserUpdater} from 'db';
 import {Request, Response} from 'express';
 
 import {SpotifyDataService, SubscriptionDaemonService} from 'services';
@@ -39,13 +39,10 @@ export class SubscriptionController {
     const poolId = `${userId}${playlistId}`;
 
     SubscriptionDaemonService.getInstance().runWithoutRepetition(poolId, async () => {
-      console.log('init');
       const playlist = await SpotifyDataService.getInstance().getPlaylist(userId, playlistId);
       const tracks = await SpotifyDataService.getInstance().getPlaylistTracks(userId, playlistId);
 
-      await SpotifyPlaylistUpdater.getInstance().setPlaylists([playlist], userId);
-      await SpotifyTrackUpdater.getInstance().setTracks(tracks, playlist.id);
-      console.log('finish');
+      await SpotifyPlaylistUpdater.getInstance().setPlaylistTracks(playlist, tracks, userId);
     });
     res.send({poolId: poolId});
   }
