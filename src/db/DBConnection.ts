@@ -16,6 +16,10 @@ export class DBConnection {
       },
     };
 
+    if (process.env.NODE_ENV === 'development') {
+      delete config.ssl;
+    }
+
     this.pool = new Pool(config);
   }
 
