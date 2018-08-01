@@ -2,12 +2,12 @@ import {User} from 'models';
 
 import {DBConnection} from './DBConnection';
 
-export class SpotifyUserUpdater {
-  private static instance: SpotifyUserUpdater;
+export class YoutubeUserUpdater {
+  private static instance: YoutubeUserUpdater;
 
   static getInstance() {
     if (!this.instance) {
-      this.instance = new SpotifyUserUpdater();
+      this.instance = new YoutubeUserUpdater();
     }
 
     return this.instance;

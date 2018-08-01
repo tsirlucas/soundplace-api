@@ -1,7 +1,7 @@
-import {SpotifyUser} from './SpotifyUser';
+import {YoutubeUser} from './YoutubeUser';
 
 export type User = {
-  id: SpotifyUser['id'];
-  name: SpotifyUser['display_name'];
-  image: SpotifyUser['images'][0]['url'];
+  id: YoutubeUser['id'];
+  name: YoutubeUser['name'];
+  image: YoutubeUser['picture'];
 };

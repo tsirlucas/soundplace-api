@@ -1,9 +1,9 @@
-import {SpotifyUser, User} from 'models';
+import {User, YoutubeUser} from 'models';
 
-export const normalizeUser = (user: SpotifyUser): User => {
+export const normalizeUser = (user: YoutubeUser): User => {
   return {
     id: user.id,
-    name: user.display_name,
-    image: user.images[0].url,
+    name: user.name,
+    image: user.picture,
   };
 };

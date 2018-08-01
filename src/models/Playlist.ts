@@ -1,7 +1,8 @@
-import {SpotifyPlaylists} from './SpotifyPlaylists';
+import {YoutubePlaylists} from './YoutubePlaylists';
+import {YoutubeThumbnails} from './YoutubeThumbnails';
 
 export type Playlist = {
-  id: SpotifyPlaylists['items'][0]['id'];
-  name: SpotifyPlaylists['items'][0]['name'];
-  cover: SpotifyPlaylists['items'][0]['images'][0]['url'];
+  id: YoutubePlaylists['items'][0]['id'];
+  name: YoutubePlaylists['items'][0]['snippet']['title'];
+  cover: YoutubeThumbnails['default']['url'];
 };

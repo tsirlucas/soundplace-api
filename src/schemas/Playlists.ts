@@ -1,19 +1,21 @@
-import {Playlist, SpotifyPlaylists} from 'models';
+import {Playlist, YoutubePlaylists} from 'models';
 
-export const normalizePlaylists = (playlists: SpotifyPlaylists): Playlist[] => {
+export const normalizePlaylists = (playlists: YoutubePlaylists): Playlist[] => {
   return playlists.items.map((item) => {
     return {
       id: item.id,
-      name: item.name,
-      cover: item.images[0].url,
+      name: item.snippet.title,
+      cover: item.snippet.thumbnails.default.url,
     };
   });
 };
 
-export const normalizePlaylist = (playlist: SpotifyPlaylists['items'][0]): Playlist => {
+export const normalizePlaylist = (payload: YoutubePlaylists): Playlist => {
+  const playlist = payload.items[0];
+
   return {
     id: playlist.id,
-    name: playlist.name,
-    cover: playlist.images[0].url,
+    name: playlist.snippet.title,
+    cover: playlist.snippet.thumbnails.default.url,
   };
 };
