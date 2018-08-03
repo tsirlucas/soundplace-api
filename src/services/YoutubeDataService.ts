@@ -36,10 +36,7 @@ export class YoutubeDataService {
 
       return result;
     } catch (e) {
-      if (
-        e.response.data.error.message === 'Only valid bearer authentication supported' ||
-        e.response.data.error.message === 'The access token expired'
-      ) {
+      if (e.response.data.error.message === 'Invalid Credentials') {
         await axios.get(
           `${environment.settings.authEndpoint}/youtube/refreshToken?userId=${userId}`,
         );
