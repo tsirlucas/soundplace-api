@@ -19,13 +19,12 @@ export class YoutubePlaylistUpdater {
   private async setPlaylist(client: PoolClient, playlist: Playlist, userId: string) {
     try {
       await client.query(
-        'INSERT INTO playlist_data (id, name, cover, user_id)\
-          VALUES ($1, $2, $3, $4)\
+        'INSERT INTO playlist_data (id, name, user_id)\
+          VALUES ($1, $2, $3)\
           ON CONFLICT (id) DO UPDATE\
           SET name = excluded.name,\
-          cover = excluded.cover,\
           user_id = excluded.user_id;',
-        [playlist.id, playlist.name, playlist.cover, userId],
+        [playlist.id, playlist.name, userId],
       );
     } catch (e) {
       throw e;
@@ -42,9 +41,27 @@ export class YoutubePlaylistUpdater {
       );
 
       await Promise.all(
-        deletedPlaylists.map((dbPlaylist: DBPlaylist) => {
-          return client.query('DELETE FROM playlist_data WHERE id=$1;', [dbPlaylist.id]);
+        deletedPlaylists.map(async (dbPlaylist: DBPlaylist) => {
+          await client.query('DELETE FROM playlist_track WHERE playlist_id=$1;', [dbPlaylist.id]);
+          await client.query('DELETE FROM cover_data WHERE playlist_id=$1;', [dbPlaylist.id]);
+          await client.query('DELETE FROM playlist_data WHERE id=$1;', [dbPlaylist.id]);
         }),
+      );
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public async setCover(client: PoolClient, cover: Playlist['cover'], playlistId: string) {
+    try {
+      await client.query(
+        'INSERT INTO cover_data (playlist_id, small, medium, big)\
+          VALUES ($1, $2, $3, $4)\
+          ON CONFLICT (playlist_id) DO UPDATE\
+          SET small = excluded.small,\
+          medium = excluded.medium,\
+          big = excluded.big;',
+        [playlistId, cover.small, cover.medium, cover.big],
       );
     } catch (e) {
       throw e;
@@ -57,7 +74,10 @@ export class YoutubePlaylistUpdater {
         try {
           await this.clearRemovedPlaylists(client, playlists, userId);
           await Promise.all(
-            playlists.map((playlist) => this.setPlaylist(client, playlist, userId)),
+            playlists.map(async (playlist) => {
+              await this.setPlaylist(client, playlist, userId);
+              await this.setCover(client, playlist.cover, playlist.id);
+            }),
           );
           res();
         } catch (e) {

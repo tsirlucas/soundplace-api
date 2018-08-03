@@ -3,6 +3,8 @@ import {environment} from 'config';
 import {YoutubeAuth} from 'db';
 import {normalizePlaylist, normalizePlaylists, normalizeTracks, normalizeUser} from 'schemas';
 
+import {YoutubeTracks} from 'src/models';
+
 export class YoutubeDataService {
   private static instance: YoutubeDataService;
 
@@ -78,10 +80,24 @@ export class YoutubeDataService {
 
   public async getPlaylistTracks(userId: string, playlistId: string) {
     try {
-      const {data} = await this.get(
+      const {data}: {data: YoutubeTracks} = await this.get(
         `/youtube/v3/playlistItems?maxResults=50&part=snippet&playlistId=${playlistId}`,
         userId,
       );
+
+      const videoIds = data.items.map((item) => item.snippet.resourceId.videoId);
+
+      const videosRes = await this.get(
+        `/youtube/v3/videos?id=${videoIds.join(',')}&part=snippet&maxResults=50`,
+        userId,
+      );
+
+      data.items = data.items.map((item, index) => {
+        item.snippet.channelId = videosRes.data.items[index].snippet.channelId;
+        item.snippet.channelTitle = videosRes.data.items[index].snippet.channelTitle;
+        return item;
+      });
+
       return normalizeTracks(data);
     } catch (e) {
       throw e;

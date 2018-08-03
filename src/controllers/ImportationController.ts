@@ -38,7 +38,6 @@ export class SubscriptionController {
 
     const playlists = await YoutubeDataService.getInstance().getUserPlaylists(userId);
     await YoutubePlaylistUpdater.getInstance().setPlaylists(playlists, userId);
-
     await this.importPlaylistTracks(userId, playlists);
     res.send();
   }

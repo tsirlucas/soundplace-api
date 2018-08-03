@@ -16,13 +16,28 @@ export class YoutubeTrackUpdater {
   private async setTrack(client: PoolClient, track: Track) {
     try {
       await client.query(
-        'INSERT INTO track_data (id, name, channel, cover)\
-          VALUES ($1, $2, $3, $4)\
+        'INSERT INTO track_data (id, name, channel)\
+          VALUES ($1, $2, $3)\
           ON CONFLICT (id) DO UPDATE\
           SET name = excluded.name,\
-          channel = excluded.channel,\
-          cover = excluded.cover',
-        [track.id, track.name, track.channel, track.cover],
+          channel = excluded.channel;',
+        [track.id, track.name, track.channel],
+      );
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public async setCover(client: PoolClient, cover: Track['cover'], trackId: string) {
+    try {
+      await client.query(
+        'INSERT INTO cover_data (track_id, small, medium, big)\
+          VALUES ($1, $2, $3, $4)\
+          ON CONFLICT (track_id) DO UPDATE\
+          SET small = excluded.small,\
+          medium = excluded.medium,\
+          big = excluded.big;',
+        [trackId, cover.small, cover.medium, cover.big],
       );
     } catch (e) {
       throw e;
@@ -45,6 +60,7 @@ export class YoutubeTrackUpdater {
   private async splitAndSetTrack(client: PoolClient, track: Track, playlistId: string) {
     try {
       await this.setTrack(client, track);
+      await this.setCover(client, track.cover, track.id);
       await this.setRelationship(client, track.id, playlistId);
     } catch (e) {
       throw e;
@@ -61,8 +77,8 @@ export class YoutubeTrackUpdater {
       const deletedTracks = rows.filter((dbTrack: DBTrack) => newTracksIds.indexOf(dbTrack.id) < 0);
 
       await Promise.all(
-        deletedTracks.map((dbTrack: DBTrack) => {
-          return client.query('DELETE FROM playlist_track WHERE track_id=$1 AND playlist_id=$2;', [
+        deletedTracks.map(async (dbTrack: DBTrack) => {
+          await client.query('DELETE FROM playlist_track WHERE track_id=$1 AND playlist_id=$2;', [
             dbTrack.id,
             playlistId,
           ]);

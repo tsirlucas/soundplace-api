@@ -5,7 +5,11 @@ export const normalizePlaylists = (playlists: YoutubePlaylists): Playlist[] => {
     return {
       id: item.id,
       name: item.snippet.title,
-      cover: item.snippet.thumbnails.default.url,
+      cover: {
+        small: item.snippet.thumbnails.default.url,
+        medium: item.snippet.thumbnails.high.url,
+        big: item.snippet.thumbnails.maxres.url,
+      },
     };
   });
 };
@@ -16,6 +20,10 @@ export const normalizePlaylist = (payload: YoutubePlaylists): Playlist => {
   return {
     id: playlist.id,
     name: playlist.snippet.title,
-    cover: playlist.snippet.thumbnails.default.url,
+    cover: {
+      small: playlist.snippet.thumbnails.default.url,
+      medium: playlist.snippet.thumbnails.high.url,
+      big: playlist.snippet.thumbnails.maxres.url,
+    },
   };
 };

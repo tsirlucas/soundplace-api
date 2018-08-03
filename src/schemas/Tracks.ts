@@ -5,6 +5,10 @@ export const normalizeTracks = (tracks: YoutubeTracks): Track[] => {
     id: item.snippet.resourceId.videoId,
     name: item.snippet.title,
     channel: item.snippet.channelTitle,
-    cover: item.snippet.thumbnails.default.url,
+    cover: {
+      small: item.snippet.thumbnails.default.url,
+      medium: item.snippet.thumbnails.high.url,
+      big: item.snippet.thumbnails.maxres.url,
+    },
   }));
 };
