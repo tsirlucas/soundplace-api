@@ -45,5 +45,6 @@ export class SubscriptionController {
   public importData = async (req: Request, res: Response) => {
     await this.importUser(req, res);
     await this.importPlaylists(req, res);
+    await YoutubeUserUpdater.getInstance().setImporting(res.locals.userId, false);
   };
 }

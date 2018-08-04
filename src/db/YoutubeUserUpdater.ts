@@ -18,10 +18,31 @@ export class YoutubeUserUpdater {
       DBConnection.getInstance().getClient(async (client) => {
         try {
           await client.query(
-            'INSERT INTO user_data (id, name, image)\
-              VALUES ($1, $2, $3)\
-              ON CONFLICT (id) DO NOTHING;',
-            [user.id, user.name, user.image],
+            'INSERT INTO user_data (id, name, image, importing)\
+              VALUES ($1, $2, $3, $4)\
+              ON CONFLICT (id) DO UPDATE\
+              SET name = excluded.name,\
+              image = excluded.image,\
+              importing = excluded.importing;',
+            [user.id, user.name, user.image, true],
+          );
+          res();
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+  }
+
+  public async setImporting(userId: string, value: boolean) {
+    return new Promise((res, reject) => {
+      DBConnection.getInstance().getClient(async (client) => {
+        try {
+          await client.query(
+            'UPDATE user_data\
+              SET importing=$2\
+              WHERE id=$1;',
+            [userId, value],
           );
           res();
         } catch (e) {
