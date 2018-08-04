@@ -3,41 +3,29 @@ import {PoolClient} from 'pg';
 import {DBPlaylist, Playlist, Track} from 'models';
 
 import {DBConnection} from './DBConnection';
-import {SpotifyTrackUpdater} from './SpotifyTrackUpdater';
+import {YoutubeTrackUpdater} from './YoutubeTrackUpdater';
 
-export class SpotifyPlaylistUpdater {
-  private static instance: SpotifyPlaylistUpdater;
+export class YoutubePlaylistUpdater {
+  private static instance: YoutubePlaylistUpdater;
 
   static getInstance() {
     if (!this.instance) {
-      this.instance = new SpotifyPlaylistUpdater();
+      this.instance = new YoutubePlaylistUpdater();
     }
 
     return this.instance;
   }
 
-  private playlistComparison(dbPlaylist: DBPlaylist, playlist: Playlist) {
-    const didNameChange = dbPlaylist.name !== playlist.name;
-    const didCoverChange = dbPlaylist.cover !== playlist.cover;
-
-    return didNameChange || didCoverChange;
-  }
-
   private async setPlaylist(client: PoolClient, playlist: Playlist, userId: string) {
     try {
-      const {rows} = await client.query('SELECT * FROM playlist_data WHERE id=$1', [playlist.id]);
-
-      if (!rows[0] || this.playlistComparison(rows[0], playlist)) {
-        await client.query(
-          'INSERT INTO playlist_data (id, name, cover, user_id)\
-          VALUES ($1, $2, $3, $4)\
+      await client.query(
+        'INSERT INTO playlist_data (id, name, user_id)\
+          VALUES ($1, $2, $3)\
           ON CONFLICT (id) DO UPDATE\
           SET name = excluded.name,\
-          cover = excluded.cover,\
           user_id = excluded.user_id;',
-          [playlist.id, playlist.name, playlist.cover, userId],
-        );
-      }
+        [playlist.id, playlist.name, userId],
+      );
     } catch (e) {
       throw e;
     }
@@ -53,9 +41,27 @@ export class SpotifyPlaylistUpdater {
       );
 
       await Promise.all(
-        deletedPlaylists.map((dbPlaylist: DBPlaylist) => {
-          return client.query('DELETE FROM playlist_data WHERE id=$1;', [dbPlaylist.id]);
+        deletedPlaylists.map(async (dbPlaylist: DBPlaylist) => {
+          await client.query('DELETE FROM playlist_track WHERE playlist_id=$1;', [dbPlaylist.id]);
+          await client.query('DELETE FROM cover_data WHERE playlist_id=$1;', [dbPlaylist.id]);
+          await client.query('DELETE FROM playlist_data WHERE id=$1;', [dbPlaylist.id]);
         }),
+      );
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public async setCover(client: PoolClient, cover: Playlist['cover'], playlistId: string) {
+    try {
+      await client.query(
+        'INSERT INTO cover_data (playlist_id, small, medium, big)\
+          VALUES ($1, $2, $3, $4)\
+          ON CONFLICT (playlist_id) DO UPDATE\
+          SET small = excluded.small,\
+          medium = excluded.medium,\
+          big = excluded.big;',
+        [playlistId, cover.small, cover.medium, cover.big],
       );
     } catch (e) {
       throw e;
@@ -68,7 +74,10 @@ export class SpotifyPlaylistUpdater {
         try {
           await this.clearRemovedPlaylists(client, playlists, userId);
           await Promise.all(
-            playlists.map((playlist) => this.setPlaylist(client, playlist, userId)),
+            playlists.map(async (playlist) => {
+              await this.setPlaylist(client, playlist, userId);
+              await this.setCover(client, playlist.cover, playlist.id);
+            }),
           );
           res();
         } catch (e) {
@@ -83,7 +92,7 @@ export class SpotifyPlaylistUpdater {
       DBConnection.getInstance().getClient(async (client) => {
         try {
           await this.setPlaylist(client, playlist, userId);
-          await SpotifyTrackUpdater.getInstance().setTracks(client, tracks, playlist.id);
+          await YoutubeTrackUpdater.getInstance().setTracks(client, tracks, playlist.id);
           res();
         } catch (e) {
           reject(e);

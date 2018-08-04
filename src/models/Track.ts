@@ -1,11 +1,12 @@
-import {Album} from './Album';
-import {Artist} from './Artist';
-import {SpotifyTracks} from './SpotifyTracks';
+import {YoutubeTracks} from './YoutubeTracks';
 
 export type Track = {
-  id: SpotifyTracks['items'][0]['track']['id'];
-  name: SpotifyTracks['items'][0]['track']['name'];
-  album: Album;
-  artist: Artist;
-  duration: SpotifyTracks['items'][0]['track']['duration_ms'];
+  id: YoutubeTracks['items'][0]['id'];
+  name: YoutubeTracks['items'][0]['snippet']['title'];
+  channel: YoutubeTracks['items'][0]['snippet']['channelTitle'];
+  cover: {
+    small: string;
+    medium: string;
+    big: string;
+  };
 };

@@ -2,7 +2,7 @@ import axios from 'axios';
 import {environment} from 'config';
 import cors from 'cors';
 import express from 'express';
-import {dataRouter, subscriptionRouter} from 'routes';
+import {dataRouter, importationRouter} from 'routes';
 
 const app = express();
 
@@ -13,6 +13,7 @@ app
   .use(async (req, res, next) => {
     try {
       const {authorization} = req.headers;
+      console.log(authorization);
       const {data} = await axios.get(`${environment.settings.authEndpoint}/jwt/verify`, {
         headers: {
           Authorization: authorization || null,
@@ -22,10 +23,11 @@ app
       res.locals.userId = data.userId;
       next();
     } catch (e) {
+      console.log(e);
       res.status(e.response.status).send(e.response.data);
     }
   })
   .use('/api', dataRouter)
-  .use('/subscription', subscriptionRouter);
+  .use('/import', importationRouter);
 
 export default app;
