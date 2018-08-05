@@ -1,3 +1,10 @@
+## [1.1.8](https://github.com/tsirlucas/soundplace-api/compare/v1.1.7...v1.1.8) (2018-08-05)
+
+
+### Bug Fixes
+
+* **import:** only on res.send when finish imports ([baa9499](https://github.com/tsirlucas/soundplace-api/commit/baa9499))
+
 ## [1.1.7](https://github.com/tsirlucas/soundplace-api/compare/v1.1.6...v1.1.7) (2018-07-23)
 
 
