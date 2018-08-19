@@ -2,13 +2,16 @@ import {Playlist, YoutubePlaylists} from 'models';
 
 export const normalizePlaylists = (playlists: YoutubePlaylists): Playlist[] => {
   return playlists.items.map((item) => {
+    const {thumbnails} = item.snippet;
+    const big = thumbnails.maxres || thumbnails.standard;
+
     return {
       id: item.id,
       name: item.snippet.title,
       cover: {
         small: item.snippet.thumbnails.default.url,
         medium: item.snippet.thumbnails.high.url,
-        big: item.snippet.thumbnails.maxres.url,
+        big: big.url,
       },
     };
   });
@@ -17,13 +20,16 @@ export const normalizePlaylists = (playlists: YoutubePlaylists): Playlist[] => {
 export const normalizePlaylist = (payload: YoutubePlaylists): Playlist => {
   const playlist = payload.items[0];
 
+  const {thumbnails} = playlist.snippet;
+  const big = thumbnails.maxres || thumbnails.standard;
+
   return {
     id: playlist.id,
     name: playlist.snippet.title,
     cover: {
       small: playlist.snippet.thumbnails.default.url,
       medium: playlist.snippet.thumbnails.high.url,
-      big: playlist.snippet.thumbnails.maxres.url,
+      big: big.url,
     },
   };
 };

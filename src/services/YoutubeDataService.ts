@@ -57,11 +57,21 @@ export class YoutubeDataService {
     }
   }
 
+  private async recursiveGet(userId: string, url: string) {
+    const {data} = await this.get(url, userId);
+    if (data.nextPageToken) {
+      const nextPageUrl = `${url}&pageToken=${data.nextPageToken}`;
+      const recursiveData = await this.recursiveGet(userId, nextPageUrl);
+      data.items = [...data.items, ...recursiveData.items];
+    }
+    return data;
+  }
+
   public async getUserPlaylists(userId: string) {
     try {
-      const {data} = await this.get(
-        '/youtube/v3/playlists?maxResults=50&part=snippet&mine=true',
+      const data = await this.recursiveGet(
         userId,
+        '/youtube/v3/playlists?maxResults=50&part=snippet&mine=true',
       );
       return normalizePlaylists(data);
     } catch (e) {
@@ -78,25 +88,61 @@ export class YoutubeDataService {
     }
   }
 
+  private async sliceIdsAndGetVideos(userId: string, ids: string[]) {
+    const perChunk = 50;
+    const chunkedIds = ids.reduce(
+      (curr, next, index) => {
+        const chunkIndex = Math.floor(index / perChunk);
+
+        if (!curr[chunkIndex]) {
+          curr[chunkIndex] = []; // start a new chunk
+        }
+
+        curr[chunkIndex].push(next);
+
+        return curr;
+      },
+      [] as string[][],
+    );
+
+    const results = await Promise.all(
+      chunkedIds.map(async (ids) => {
+        const {data} = await this.get(
+          `/youtube/v3/videos?id=${ids.join(',')}&part=snippet&maxResults=50`,
+          userId,
+        );
+        return data;
+      }),
+    );
+    return results.reduce(
+      (curr, next) => {
+        curr.items = [...curr.items, ...next.items];
+        return curr;
+      },
+      {items: []},
+    );
+  }
+
   public async getPlaylistTracks(userId: string, playlistId: string) {
     try {
-      const {data}: {data: YoutubeTracks} = await this.get(
-        `/youtube/v3/playlistItems?maxResults=50&part=snippet&playlistId=${playlistId}`,
-        userId,
-      );
-
+      const url = `/youtube/v3/playlistItems?maxResults=50&part=snippet&playlistId=${playlistId}`;
+      const data: YoutubeTracks = await this.recursiveGet(userId, url);
       const videoIds = data.items.map((item) => item.snippet.resourceId.videoId);
+      const videosRes = await this.sliceIdsAndGetVideos(userId, videoIds);
 
-      const videosRes = await this.get(
-        `/youtube/v3/videos?id=${videoIds.join(',')}&part=snippet&maxResults=50`,
-        userId,
-      );
+      const indexedVideos = videosRes.items.reduce((curr: any, next: any) => {
+        curr[next.id] = next;
+        return curr;
+      }, {});
 
-      data.items = data.items.map((item, index) => {
-        item.snippet.channelId = videosRes.data.items[index].snippet.channelId;
-        item.snippet.channelTitle = videosRes.data.items[index].snippet.channelTitle;
-        return item;
-      });
+      data.items = data.items
+        .filter((i) => indexedVideos[i.snippet.resourceId.videoId])
+        .map((item) => {
+          item.snippet.channelId = indexedVideos[item.snippet.resourceId.videoId].snippet.channelId;
+          item.snippet.channelTitle =
+            indexedVideos[item.snippet.resourceId.videoId].snippet.channelTitle;
+          return item;
+        });
 
       return normalizeTracks(data);
     } catch (e) {
