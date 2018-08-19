@@ -1,3 +1,10 @@
+## [1.1.9](https://github.com/tsirlucas/soundplace-api/compare/v1.1.8...v1.1.9) (2018-08-19)
+
+
+### Bug Fixes
+
+* **youtube:** download all pages and fix error on deleted videos ([a449684](https://github.com/tsirlucas/soundplace-api/commit/a449684))
+
 ## [1.1.8](https://github.com/tsirlucas/soundplace-api/compare/v1.1.7...v1.1.8) (2018-08-05)
 
 
