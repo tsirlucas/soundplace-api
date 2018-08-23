@@ -1,17 +1,18 @@
 import {Playlist, YoutubePlaylists} from 'models';
 
+import {getBig, getMedium, getSmall} from './util';
+
 export const normalizePlaylists = (playlists: YoutubePlaylists): Playlist[] => {
   return playlists.items.map((item) => {
     const {thumbnails} = item.snippet;
-    const big = thumbnails.maxres || thumbnails.standard;
 
     return {
       id: item.id,
       name: item.snippet.title,
       cover: {
-        small: item.snippet.thumbnails.default.url,
-        medium: item.snippet.thumbnails.high.url,
-        big: big.url,
+        small: getSmall(thumbnails).url,
+        medium: getMedium(thumbnails).url,
+        big: getBig(thumbnails).url,
       },
     };
   });
@@ -21,15 +22,14 @@ export const normalizePlaylist = (payload: YoutubePlaylists): Playlist => {
   const playlist = payload.items[0];
 
   const {thumbnails} = playlist.snippet;
-  const big = thumbnails.maxres || thumbnails.standard;
 
   return {
     id: playlist.id,
     name: playlist.snippet.title,
     cover: {
-      small: playlist.snippet.thumbnails.default.url,
-      medium: playlist.snippet.thumbnails.high.url,
-      big: big.url,
+      small: getSmall(thumbnails).url,
+      medium: getMedium(thumbnails).url,
+      big: getBig(thumbnails).url,
     },
   };
 };
