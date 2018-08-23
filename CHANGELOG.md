@@ -1,3 +1,10 @@
+## [1.1.10](https://github.com/tsirlucas/soundplace-api/compare/v1.1.9...v1.1.10) (2018-08-23)
+
+
+### Bug Fixes
+
+* **thumbnails:** fix thumbnails error ([8ef6c5b](https://github.com/tsirlucas/soundplace-api/commit/8ef6c5b))
+
 ## [1.1.9](https://github.com/tsirlucas/soundplace-api/compare/v1.1.8...v1.1.9) (2018-08-19)
 
 
